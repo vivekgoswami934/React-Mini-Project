@@ -1,0 +1,15 @@
+.App {
+  text-align: center;
+}
+
+.App input {
+  height: 40px;
+  width: 40px;
+  margin: 1rem 0.2rem;
+  text-align: center;
+}
+
+.green {
+  background-color: lightgreen;
+  color: green;
+}
