@@ -2,15 +2,20 @@ import React, { useRef, useState } from "react";
 import PropTypes from "prop-types";
 import PinInput from "./PinInput";
 
-const Pin = ({ length, perInputBox = 2, setPin }) => {  //default parameter
-  const [inputBoxLength] = useState(new Array(length).fill(""));
+const Pin = ({ length, perInputBox = 1, setPin }) => {  //default parameter
+
+  const [inputBoxLength] = useState(new Array(length).fill("")); // ["" , "" , ""]
+
   const [inputBoxValue] = useState(new Array(length).fill(""));
+
   const [isCorrect, setIsCorrect] = useState(false);
+
+
   const inputRef = useRef([]);
 
   const onChangeHandler = (e, index) => {
     inputBoxValue[index] = e.target.value;
-    if (index < length - 1) {                       //
+    if (index < length - 1 && inputRef.current[index].value.length === perInputBox) {                       //
       inputRef.current[index + 1].focus();
     }
     setPin(inputBoxValue.join(""));
@@ -21,35 +26,61 @@ const Pin = ({ length, perInputBox = 2, setPin }) => {  //default parameter
   };
 
   const backspaceHandler = (e, index) => {
-    if (index > 0 && e.target.value === ""){
+
+    if (index > 0 && e.target.value === "") {
       inputRef.current[index - 1].focus();
     }
     inputBoxValue[index] = e.target.value;
     setPin(inputBoxValue.join(""));
+
     if (inputBoxValue.join("") !== "admin") {
       setIsCorrect(false);
     }
+
   };
 
   const handlePaste = (e) => {
     e.preventDefault();
-    const data = e.clipboardData
-      .getData("text")
-      .split("")
-      .filter((item, index) => index < length);
-    console.log(data);
 
-    data.forEach((item, index) => {
+    const data = e.clipboardData.getData("text").split("").filter((_, index) => index < length * perInputBox);
+
+    console.log(data)
+
+    let value = []
+
+   
+
+    for (let i = 0; i < length* perInputBox ; i += perInputBox) {
+      let str = ""
+      for (let j = i; j < perInputBox+i; j++) {
+        str += data[j]
+      }
+      value.push(str)
+    }
+
+    console.log(value)
+
+    // ["abc" , "def" , "ghi" , "ijk" , lmn]  abcdefghijklmno
+
+    value.forEach((item, index) => {
       inputBoxValue[index] = item;
-       inputRef.current[index].value = item;
+
+      inputRef.current[index].value = item;
+
       if (index < length - 1) {
         inputRef.current[index + 1].focus();
       }
     });
+
+  
+    setPin(inputBoxValue.join(""))
+
   };
 
+
+
   return (
-    <div onPaste={handlePaste}>
+    <div onPaste={handlePaste} style={{border : "2px solid black"}}>
       {inputBoxLength.map((item, index) => {
         return (
           <PinInput
@@ -102,3 +133,8 @@ inputRef =  <input 3 ref={inputRef}/>
 
 
 // e.target.value.length > 3 && 
+
+
+
+
+//event bubbling  capturing
